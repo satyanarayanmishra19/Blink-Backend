@@ -1,62 +1,51 @@
 package com.example.blink.controller;
 
-import com.example.blink.model.ChatMessage;
-import com.example.blink.model.User;
-import com.example.blink.service.UserService;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.web.bind.annotation.*;
-import java.util.List;
-import java.util.logging.Logger;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
-@RestController
-@RequestMapping("/api/chats")
+import com.example.blink.model.ChatMessage;
+import com.example.blink.model.User;
+import com.example.blink.service.UserService;
+
+@Controller
 public class ChatController {
 
     @Autowired
     private UserService userService;
 
-    @Autowired
-    private SimpMessagingTemplate simpMessagingTemplate;
-
-    private static final Logger logger = Logger.getLogger(ChatController.class.getName());
-
     @GetMapping("/{username}")
     public ResponseEntity<List<User>> getChats(@PathVariable String username,
                                                @RequestParam(name = "search", required = false) String search) {
         List<User> users = search != null ? userService.searchUsers(search) : userService.getAllUsers();
+        users.removeIf(user -> user.getUsername().equals(username));
         return ResponseEntity.ok(users);
     }
 
-    @MessageMapping("/message")
-    @SendTo("/chatroom/public")
-    public ChatMessage receiveMessage(@Payload ChatMessage message) {
-        if (message.getSender() == null || message.getText() == null) {
-            throw new IllegalArgumentException("Sender and text are required");
-        }
-
-        logger.info("Public message received: " + message);
-
-        return message; 
+    @MessageMapping("/sendMessage")
+    @SendTo("/topic/public")
+    public ChatMessage sendMessage(@Payload ChatMessage chatMessage) {
+        
+        return chatMessage;
+        
     }
 
-    @MessageMapping("/private-message")
-    public void privateMessage(@Payload ChatMessage message) {
-        if (message.getSender() == null || message.getRecipient() == null || message.getText() == null) {
-            throw new IllegalArgumentException("Sender, recipient, and text are required");
-        }
-
-        logger.info("Private message received: " + message);
-
-        String recipient = message.getRecipient();
-        String content = message.getText();
-
-        logger.info(String.format("Sending message from %s to %s: %s", message.getSender(), recipient, content));
-
-        simpMessagingTemplate.convertAndSendToUser(recipient, "/private", message);
+    @MessageMapping("/addUser")
+    @SendTo("/topic/public")
+    public ChatMessage addUser(@Payload ChatMessage chatMessage, SimpMessageHeaderAccessor headerAccessor) {
+        
+        // Add username in web socket session
+        headerAccessor.getSessionAttributes().put("username", chatMessage.getSender());
+        return chatMessage;
+        
     }
 }

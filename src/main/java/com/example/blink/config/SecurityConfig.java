@@ -28,17 +28,27 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> 
-                auth.requestMatchers("/api/users/signup", "/api/auth/login", "/error", "/api/users/save-username", "/api/users/update-preferences").permitAll()
-                    .requestMatchers("/api/chats/**", "/api/users/get-user-details").authenticated()
-                    .anyRequest().authenticated()
+                auth.requestMatchers(
+                    "/api/users/signup", 
+                    "/api/auth/login", 
+                    "/error", 
+                    "/api/users/save-username", 
+                    "/api/users/update-preferences", 
+                    "/ws/**",
+                    "/ws/info/**",
+                    "/topic/**", 
+                    "/app/**" 
+                ).permitAll()
+                .requestMatchers("/api/chats/**", "/api/users/get-user-details").authenticated()
+                .anyRequest().authenticated()
             )
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .headers(headers -> headers.frameOptions().disable());  // Optional for frontend compatibility
 
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-
         return http.build();
     }
-
+    
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
         return authConfig.getAuthenticationManager();
