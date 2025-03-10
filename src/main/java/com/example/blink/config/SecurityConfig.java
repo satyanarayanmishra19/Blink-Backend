@@ -33,11 +33,7 @@ public class SecurityConfig {
                     "/api/auth/login", 
                     "/error", 
                     "/api/users/save-username", 
-                    "/api/users/update-preferences", 
-                    "/ws/**",
-                    "/ws/info/**",
-                    "/topic/**", 
-                    "/app/**" 
+                    "/api/users/update-preferences"
                 ).permitAll()
                 .requestMatchers("/api/chats/**", "/api/users/get-user-details").authenticated()
                 .anyRequest().authenticated()
