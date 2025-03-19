@@ -35,7 +35,10 @@ public class SecurityConfig {
                     "/api/users/save-username", 
                     "/api/users/update-preferences"
                 ).permitAll()
-                .requestMatchers("/api/chats/**", "/api/users/get-user-details").authenticated()
+                .requestMatchers("/api/chats/**",
+                    "/ws/**",
+                    "/api/users/get-user-details" 
+                    ).authenticated()
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -55,4 +58,3 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 }
-

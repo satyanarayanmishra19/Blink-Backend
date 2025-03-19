@@ -135,6 +135,18 @@ public class UserService implements UserDetailsService {
         return passwordEncoder.matches(rawPassword, encodedPassword);
     }
 
+    public boolean hasMatchingPreferences(String username, User otherUser) {
+        User currentUser = userRepository.findByUsername(username);
+        if (currentUser == null || otherUser == null) {
+            return false;
+        }
+        Set<String> currentUserPreferences = currentUser.getPreferences();
+        Set<String> otherUserPreferences = otherUser.getPreferences();
+        return currentUserPreferences != null && otherUserPreferences != null &&
+               !currentUserPreferences.isEmpty() &&
+               currentUserPreferences.stream().anyMatch(otherUserPreferences::contains);
+    }
+
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = userRepository.findByEmail(email).orElse(null);
