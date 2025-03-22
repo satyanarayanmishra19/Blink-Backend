@@ -32,12 +32,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
         String authorizationHeader = request.getHeader("Authorization");
-
         String token = null;
         String email = null;
 
+        // Extract token from Authorization header
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             token = authorizationHeader.substring(7);
+        }
+
+        if (token != null) {
             email = jwtUtil.extractEmail(token);
         }
 
