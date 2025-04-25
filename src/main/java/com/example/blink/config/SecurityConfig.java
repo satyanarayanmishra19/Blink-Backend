@@ -38,7 +38,8 @@ public class SecurityConfig {
                     "/api/users/get-user-details",
                     "/api/messages/send",
                     "/api/messages/chat/**",
-                    "/api/chats/**"
+                    "/api/chats/**",
+                    "/api/fcm/token"
                     ).authenticated()
                 .anyRequest().authenticated()
             );

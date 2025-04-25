@@ -38,6 +38,8 @@ public class User {
     @ElementCollection
     private Set<String> preferences;
 
+    private String fcmToken;
+
     private String password;
 
     // Getters and setters
@@ -55,6 +57,14 @@ public class User {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public void setFcmToken(String fcmToken) {
+        this.fcmToken = fcmToken;
+    }
+
+    public String getFcmToken() {
+        return fcmToken;
     }
 
     public String getPassword() {
