@@ -39,7 +39,9 @@ public class SecurityConfig {
                     "/api/messages/send",
                     "/api/messages/chat/**",
                     "/api/chats/**",
-                    "/api/fcm/token"
+                    "/api/fcm/token",
+                    "/api/users/verify-email-otp",
+                    "/api/users/update-name"
                     ).authenticated()
                 .anyRequest().authenticated()
             );

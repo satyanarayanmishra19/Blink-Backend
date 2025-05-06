@@ -8,7 +8,7 @@ import java.util.Date;
 
 @Component
 public class JwtUtil {
-    private static final String SECRET = "MySuperSecureSecretKey1234567890!@#"; // Ensure this key is at least 32 characters long
+    private static final String SECRET = "MySuperSecureSecretKey1234567890!#$@"; // Ensure this key is at least 32 characters long
     private static final long EXPIRATION_TIME = 86400000; // 24 hours
 
     private Key key = Keys.hmacShaKeyFor(SECRET.getBytes());

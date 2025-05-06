@@ -20,14 +20,8 @@ public class MessageController {
 
     @PostMapping("/send")
     public Message sendMessage(@RequestBody Message message) {
-        // Save the message
         Message savedMessage = messageRepository.save(message);
-        
-        // Send notification through Firebase
         firebaseNotificationService.sendMessageNotification(savedMessage);
-        System.out.println("############################");
-        System.out.println("Called the Firebase Notification");
-        
         return savedMessage;
     }
 
